@@ -1,0 +1,37 @@
+{
+    "id": "DebrisTweaks",
+    "name": "DebrisTweaks",
+    "author": "Raemien",
+    "icon": "cover.png",
+	"coverImageFilename": "cover.png",
+    "description": [
+        "Allows for full customization of various note debris parameters, including scale, lifetime and velocity."
+    ],
+    "category": "Gameplay",
+    "gameVersion": "1.13.0",
+    "version": "0.2.0",
+    "platform": "Quest",
+    "components": [
+        {
+            "type": "HookMod",
+            "installAction": {
+                "installLibraryFile": "libdebris-tweaks.so"
+            },
+            "uninstallAction": {
+                "removeLibraryFile": "libdebris-tweaks.so"
+            }
+        },
+        {
+            "type": "HookModLibrary",
+            "installAction": {
+				"installLibraryFile": "libquestui.so"
+			}
+        },
+        {
+            "type": "HookModLibrary",
+            "installAction": {
+				"installLibraryFile": "libcustom-types.so"
+			}
+        }
+    ]
+}
