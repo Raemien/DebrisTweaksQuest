@@ -1,5 +1,5 @@
 # DebrisTweaks
-A Beat Saber plugin for tweaking various debris parameters.
+A Quest Beat Saber plugin for tweaking various debris parameters.
 ## Configuration:
 * **Override Lifetime:** Sets whether the base-game lifespan system is overriden.
 * **Enable Gravity:** Should note debris react to gravity?
