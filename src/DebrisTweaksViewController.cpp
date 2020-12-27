@@ -15,9 +15,13 @@
 #include "UnityEngine/UI/VerticalLayoutGroup.hpp"
 #include "UnityEngine/UI/HorizontalLayoutGroup.hpp"
 #include "UnityEngine/RectOffset.hpp"
+#include "UnityEngine/Resources.hpp"
+#include "UnityEngine/Object.hpp"
 #include "UnityEngine/GameObject.hpp"
 #include "UnityEngine/Transform.hpp"
 #include "UnityEngine/Events/UnityAction.hpp"
+#include "GlobalNamespace/SimpleLevelStarter.hpp"
+#include "GlobalNamespace/BeatmapLevelSO.hpp"
 
 using namespace DebrisTweaks;
 DEFINE_CLASS(DebrisTweaksViewController);
@@ -141,6 +145,22 @@ void ResetValues(DebrisTweaksViewController* self)
     ReloadUIValues(self);
 }
 
+void TestDebris()
+{
+    Array<UnityEngine::Object*>* levelStartArray = UnityEngine::Resources::FindObjectsOfTypeAll(il2cpp_utils::GetSystemType("", "SimpleLevelStarter"));
+    for (int i = 0; i < sizeof(levelStartArray); i++)
+    {
+        GlobalNamespace::SimpleLevelStarter* lstart = (GlobalNamespace::SimpleLevelStarter*)levelStartArray->values[i];
+        if (lstart->get_gameObject()->get_name()->Contains(il2cpp_utils::createcsstr("PerformanceTestLevelButton")))
+        {
+            getLogger().info("[DebrisTweaks] Starting test level...");
+            lstart->level->songName = il2cpp_utils::createcsstr("Debris Test");
+            lstart->StartLevel();
+            return;
+        } 
+    }
+}
+
 void DebrisTweaksViewController::DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 {
     SetInitialValues();
@@ -204,6 +224,10 @@ void DebrisTweaksViewController::DidActivate(bool firstActivation, bool addedToH
         // Footer container
         UnityEngine::UI::HorizontalLayoutGroup* footercontainer = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(container->get_rectTransform());
         footercontainer->set_padding(UnityEngine::RectOffset::New_ctor(1, 1, 2, 2));
+
+        auto onTest = il2cpp_utils::MakeDelegate<UnityEngine::Events::UnityAction*>(classof(UnityEngine::Events::UnityAction*), this, TestDebris);
+        UnityEngine::UI::Button* testButton = QuestUI::BeatSaberUI::CreateUIButton(footercontainer->get_rectTransform(), "Test Debris!", onTest);
+
         auto onReset = il2cpp_utils::MakeDelegate<UnityEngine::Events::UnityAction*>(classof(UnityEngine::Events::UnityAction*), this, ResetValues);
         UnityEngine::UI::Button* resetButton = QuestUI::BeatSaberUI::CreateUIButton(footercontainer->get_rectTransform(), "Reset", onReset);
 
