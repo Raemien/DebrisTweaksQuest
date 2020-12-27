@@ -82,14 +82,14 @@ void OnChangeScale(DebrisTweaksViewController* self, float newval)
 
 void OnChangeVelocity(DebrisTweaksViewController* self, float newval)
 {
-    newval = std::abs(std::round(newval * 100)) / 100;
+    newval = std::round(newval * 100) / 100;
     auto& modcfg = getConfig().config;
     auto* element = self->debrisVelMulSetting;
     auto* decrButton = element->GetComponentsInChildren<UnityEngine::UI::Button*>()->values[0];
     auto* incrButton = element->GetComponentsInChildren<UnityEngine::UI::Button*>()->values[1];
     decrButton->set_interactable(true);
     incrButton->set_interactable(true);
-    if (newval < element->Increment)
+    if (newval < -3 + element->Increment)
     {
         decrButton->set_interactable(false);
     }
