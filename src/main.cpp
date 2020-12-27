@@ -65,7 +65,7 @@ Vector3 cpoint, Vector3 cnorm, Vector3 force, Vector3 torque, float lifeTime)
 extern "C" void setup(ModInfo& info) {
 
     info.id = "DebrisTweaks";
-    info.version = "0.2.1";
+    info.version = "0.3.0";
     modInfo = info;
     getConfig().Load();
 }
