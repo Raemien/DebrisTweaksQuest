@@ -20,6 +20,7 @@ using namespace DebrisTweaks;
 #include "UnityEngine/Vector3.hpp"
 #include "UnityEngine/Rigidbody.hpp"
 #include "UnityEngine/Color.hpp"
+#include "GlobalNamespace/ColorManager.hpp"
 #include "UnityEngine/Renderer.hpp"
 #include "UnityEngine/Material.hpp"
 #include "GlobalNamespace/NoteDebris.hpp"
@@ -38,7 +39,7 @@ Configuration& getConfig() {
     static Configuration config(modInfo);
     return config;
 }
-
+bool isDebris = false;
 MAKE_HOOK_OFFSETLESS(NoteDebris_Init, void, NoteDebris* self, ColorType color, Vector3 pos, Quaternion rot, Vector3 posoff, Quaternion rotoff,
 Vector3 cpoint, Vector3 cnorm, Vector3 force, Vector3 torque, float lifeTime)
 {
@@ -49,17 +50,38 @@ Vector3 cpoint, Vector3 cnorm, Vector3 force, Vector3 torque, float lifeTime)
         float vmul = modconfig["velocityMultiplier"].GetFloat();
         bool overrideLifetime = modconfig["overrideLifetime"].GetBool();
         lifeTime = overrideLifetime ? modconfig["debrisLifetime"].GetFloat() : lifeTime;
+        color = modconfig["MonochromeDebris"].GetBool() ? (int)ColorType::None : (int)color;
         force.x *= vmul; force.y *= vmul; force.z *= vmul;
     }
+    isDebris = true;
     NoteDebris_Init(self, color, pos, rot, posoff, rotoff, cpoint, cnorm, force, torque, lifeTime);
+    isDebris = false;
     // Transform + Rigidbody parameters
     if (modconfig["enabled"].GetBool() && self)
     {
         UnityEngine::Rigidbody* rbody = self->GetComponent<UnityEngine::Rigidbody*>();
+        //il2cpp_utils::RunMethod(rbody, "set_freezeRotation", modconfig["FreezeRotations"].GetBool());
+        //il2cpp_utils::RunMethod(rbody, "set_drag", modconfig["Drag"].GetFloat());
+
+        static auto set_freezeRotation = reinterpret_cast<function_ptr_t<void, UnityEngine::Rigidbody*, bool>>(il2cpp_functions::resolve_icall("UnityEngine.Rigidbody::set_freezeRotation"));
+        set_freezeRotation(rbody, modconfig["FreezeRotations"].GetBool());
+
+        static auto set_drag = reinterpret_cast<function_ptr_t<void, UnityEngine::Rigidbody*, float>>(il2cpp_functions::resolve_icall("UnityEngine.Rigidbody::set_drag"));
+        set_drag(rbody, modconfig["Drag"].GetFloat());
+
         UnityEngine::Transform* tform = self->get_transform();
         rbody->set_useGravity(modconfig["enableGravity"].GetBool());
         tform->set_localScale(UnityEngine::Vector3().get_one() * modconfig["debrisScale"].GetFloat());
     }
+}
+//Gray debris 
+MAKE_HOOK_OFFSETLESS(ColorManager_ColorForType, UnityEngine::Color, ColorManager* self, ColorType color)
+{
+    if(isDebris && color == ColorType::None)
+    {
+        return UnityEngine::Color::get_gray();
+    }
+    return ColorManager_ColorForType(self, color);
 }
 
 extern "C" void setup(ModInfo& info) {
@@ -75,6 +97,7 @@ extern "C" void load() {
     il2cpp_functions::Init();
     QuestUI::Init();
     INSTALL_HOOK_OFFSETLESS(NoteDebris_Init, il2cpp_utils::FindMethodUnsafe("", "NoteDebris", "Init", 10)); 
+    INSTALL_HOOK_OFFSETLESS(ColorManager_ColorForType, il2cpp_utils::FindMethodUnsafe("", "ColorManager", "ColorForType", 1)); 
     custom_types::Register::RegisterType<DebrisTweaksViewController>();
     QuestUI::Register::RegisterModSettingsViewController<DebrisTweaksViewController*>(modInfo);
 }
