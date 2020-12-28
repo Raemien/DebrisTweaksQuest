@@ -10,10 +10,11 @@ struct Config_t
     bool enabled = false;
     bool overrideLifetime = true;
     bool enableGravity = true;
-    bool FreezeRotations = true;
-    bool Monochrome = false;
-    float Drag = 0;
+    bool freezeRotations = true;
+    bool monochrome = false;
+    float drag = 0;
     float debrisLifetime = 2;
+    float gravAmmount = 2;
     float debrisScale = 1;
     float velocityMultiplier = 1;
 }
@@ -30,9 +31,9 @@ void SetupConfig()
     getConfig().config.AddMember("debrisLifetime", Settings.debrisLifetime, allocator);
     getConfig().config.AddMember("debrisScale", Settings.debrisScale, allocator);
     getConfig().config.AddMember("velocityMultiplier", Settings.velocityMultiplier, allocator);
-    getConfig().config.AddMember("FreezeRotations", Settings.FreezeRotations, allocator);
-    getConfig().config.AddMember("Drag", Settings.Drag, allocator);
-    getConfig().config.AddMember("MonochromeDebris", Settings.Monochrome, allocator);
+    getConfig().config.AddMember("freezeRotations", Settings.freezeRotations, allocator);
+    getConfig().config.AddMember("drag", Settings.drag, allocator);
+    getConfig().config.AddMember("monochromeDebris", Settings.monochrome, allocator);
     getConfig().Write();
 }
 
@@ -45,8 +46,8 @@ bool LoadConfig()
     if(!getConfig().config.HasMember("debrisLifetime") || !getConfig().config["debrisLifetime"].IsFloat()) return false;
     if(!getConfig().config.HasMember("debrisScale") || !getConfig().config["debrisScale"].IsFloat()) return false;
     if(!getConfig().config.HasMember("velocityMultiplier") || !getConfig().config["velocityMultiplier"].IsFloat()) return false;
-    if(!getConfig().config.HasMember("FreezeRotations") || !getConfig().config["FreezeRotations"].IsBool()) return false;
-    if(!getConfig().config.HasMember("MonochromeDebris") || !getConfig().config["MonochromeDebris"].IsBool()) return false;
-    if(!getConfig().config.HasMember("Drag") || !getConfig().config["Drag"].IsFloat()) return false;
+    if(!getConfig().config.HasMember("freezeRotations") || !getConfig().config["freezeRotations"].IsBool()) return false;
+    if(!getConfig().config.HasMember("monochromeDebris") || !getConfig().config["monochromeDebris"].IsBool()) return false;
+    if(!getConfig().config.HasMember("drag") || !getConfig().config["drag"].IsFloat()) return false;
     return true;
 }

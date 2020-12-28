@@ -19,11 +19,14 @@ using namespace DebrisTweaks;
 #include "UnityEngine/Quaternion.hpp"
 #include "UnityEngine/Vector3.hpp"
 #include "UnityEngine/Rigidbody.hpp"
+#include "UnityEngine/Material.hpp"
+#include "UnityEngine/MeshRenderer.hpp"
 #include "UnityEngine/Color.hpp"
 #include "GlobalNamespace/ColorManager.hpp"
 #include "UnityEngine/Renderer.hpp"
 #include "UnityEngine/Material.hpp"
 #include "GlobalNamespace/NoteDebris.hpp"
+#include "GlobalNamespace/NoteDebrisSimplePhysics.hpp"
 #include "GlobalNamespace/ColorType.hpp"
 
 using namespace GlobalNamespace;
@@ -50,7 +53,7 @@ Vector3 cpoint, Vector3 cnorm, Vector3 force, Vector3 torque, float lifeTime)
         float vmul = modconfig["velocityMultiplier"].GetFloat();
         bool overrideLifetime = modconfig["overrideLifetime"].GetBool();
         lifeTime = overrideLifetime ? modconfig["debrisLifetime"].GetFloat() : lifeTime;
-        color = modconfig["MonochromeDebris"].GetBool() ? (int)ColorType::None : (int)color;
+        color = modconfig["monochromeDebris"].GetBool() ? (int)ColorType::None : (int)color;
         force.x *= vmul; force.y *= vmul; force.z *= vmul;
     }
     isDebris = true;
@@ -60,14 +63,12 @@ Vector3 cpoint, Vector3 cnorm, Vector3 force, Vector3 torque, float lifeTime)
     if (modconfig["enabled"].GetBool() && self)
     {
         UnityEngine::Rigidbody* rbody = self->GetComponent<UnityEngine::Rigidbody*>();
-        //il2cpp_utils::RunMethod(rbody, "set_freezeRotation", modconfig["FreezeRotations"].GetBool());
-        //il2cpp_utils::RunMethod(rbody, "set_drag", modconfig["Drag"].GetFloat());
 
         static auto set_freezeRotation = reinterpret_cast<function_ptr_t<void, UnityEngine::Rigidbody*, bool>>(il2cpp_functions::resolve_icall("UnityEngine.Rigidbody::set_freezeRotation"));
-        set_freezeRotation(rbody, modconfig["FreezeRotations"].GetBool());
+        set_freezeRotation(rbody, modconfig["freezeRotations"].GetBool());
 
         static auto set_drag = reinterpret_cast<function_ptr_t<void, UnityEngine::Rigidbody*, float>>(il2cpp_functions::resolve_icall("UnityEngine.Rigidbody::set_drag"));
-        set_drag(rbody, modconfig["Drag"].GetFloat());
+        set_drag(rbody, modconfig["drag"].GetFloat());
 
         UnityEngine::Transform* tform = self->get_transform();
         rbody->set_useGravity(modconfig["enableGravity"].GetBool());
