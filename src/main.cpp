@@ -53,7 +53,7 @@ Vector3 cpoint, Vector3 cnorm, Vector3 force, Vector3 torque, float lifeTime)
         float vmul = modconfig["velocityMultiplier"].GetFloat();
         bool overrideLifetime = modconfig["overrideLifetime"].GetBool();
         lifeTime = overrideLifetime ? modconfig["debrisLifetime"].GetFloat() : lifeTime;
-        color = modconfig["monochromeDebris"].GetBool() ? (int)ColorType::None : (int)color;
+        color = (modconfig["monochromeDebris"].GetBool() || modconfig["enableCustomDebrisColor"].GetBool()) ? (int)ColorType::None : (int)color;
         force.x *= vmul; force.y *= vmul; force.z *= vmul;
     }
     isDebris = true;
@@ -78,9 +78,13 @@ Vector3 cpoint, Vector3 cnorm, Vector3 force, Vector3 torque, float lifeTime)
 //Gray debris 
 MAKE_HOOK_OFFSETLESS(ColorManager_ColorForType, UnityEngine::Color, ColorManager* self, ColorType color)
 {
+    auto& modconfig = getConfig().config;
     if(isDebris && color == ColorType::None)
     {
-        return UnityEngine::Color::get_gray();
+        UnityEngine::Color col = UnityEngine::Color::get_white();
+        if(modconfig["monochromeDebris"].GetBool()) col = UnityEngine::Color::get_gray();
+        if(modconfig["enableCustomDebrisColor"].GetBool()) col = UnityEngine::Color(modconfig["customDebrisColorR"].GetFloat()/255.0f, modconfig["customDebrisColorG"].GetFloat()/255.0f, modconfig["customDebrisColorB"].GetFloat()/255.0f, 1.0f);
+        return col;
     }
     return ColorManager_ColorForType(self, color);
 }
