@@ -6,4 +6,4 @@
 #include "beatsaber-hook/shared/utils/il2cpp-functions.hpp"
 
 Configuration& getConfig();
-const Logger& getLogger();
+extern Logger& getLogger();

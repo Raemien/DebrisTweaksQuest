@@ -166,7 +166,7 @@ void DebrisTweaksViewController::DidActivate(bool firstActivation, bool addedToH
     SetInitialValues();
     if (firstActivation && addedToHierarchy)
     {
-        settingsFC = QuestUI::getModSettingsFlowCoordinator();
+        settingsFC = QuestUI::GetModSettingsFlowCoordinator();
 
         UnityEngine::UI::VerticalLayoutGroup* container = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(get_rectTransform());
         container->set_childAlignment(UnityEngine::TextAnchor::UpperCenter);

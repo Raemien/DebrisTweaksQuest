@@ -26,23 +26,22 @@ using namespace DebrisTweaks;
 #include "UnityEngine/Renderer.hpp"
 #include "UnityEngine/Material.hpp"
 #include "GlobalNamespace/NoteDebris.hpp"
-#include "GlobalNamespace/NoteDebrisSimplePhysics.hpp"
 #include "GlobalNamespace/ColorType.hpp"
 
 using namespace GlobalNamespace;
 
 static ModInfo modInfo;
 
-static const Logger& getLogger() {
-    static const Logger logger(modInfo);
-    return logger;
+Logger& getLogger() {
+    static Logger* logger = new Logger(modInfo, LoggerOptions(false, true));
+    return *logger;
 }
 
 Configuration& getConfig() {
     static Configuration config(modInfo);
     return config;
 }
-bool isDebris = false;
+
 MAKE_HOOK_OFFSETLESS(NoteDebris_Init, void, NoteDebris* self, ColorType color, Vector3 pos, Quaternion rot, Vector3 posoff, Quaternion rotoff,
 Vector3 cpoint, Vector3 cnorm, Vector3 force, Vector3 torque, float lifeTime)
 {
@@ -53,12 +52,9 @@ Vector3 cpoint, Vector3 cnorm, Vector3 force, Vector3 torque, float lifeTime)
         float vmul = modconfig["velocityMultiplier"].GetFloat();
         bool overrideLifetime = modconfig["overrideLifetime"].GetBool();
         lifeTime = overrideLifetime ? modconfig["debrisLifetime"].GetFloat() : lifeTime;
-        color = (modconfig["monochromeDebris"].GetBool() || modconfig["enableCustomDebrisColor"].GetBool()) ? (int)ColorType::None : (int)color;
         force.x *= vmul; force.y *= vmul; force.z *= vmul;
     }
-    isDebris = true;
     NoteDebris_Init(self, color, pos, rot, posoff, rotoff, cpoint, cnorm, force, torque, lifeTime);
-    isDebris = false;
     // Transform + Rigidbody parameters
     if (modconfig["enabled"].GetBool() && self)
     {
@@ -73,21 +69,12 @@ Vector3 cpoint, Vector3 cnorm, Vector3 force, Vector3 torque, float lifeTime)
         UnityEngine::Transform* tform = self->get_transform();
         rbody->set_useGravity(modconfig["enableGravity"].GetBool());
         tform->set_localScale(UnityEngine::Vector3().get_one() * modconfig["debrisScale"].GetFloat());
+
+        UnityEngine::Renderer* rend = self->GetComponent<UnityEngine::Renderer*>();
+        if (modconfig["monochromeDebris"].GetBool()) rend->get_material()->SetColor(il2cpp_utils::createcsstr("_SimpleColor"), UnityEngine::Color::get_white());
     }
 }
-//Gray debris 
-MAKE_HOOK_OFFSETLESS(ColorManager_ColorForType, UnityEngine::Color, ColorManager* self, ColorType color)
-{
-    auto& modconfig = getConfig().config;
-    if(isDebris && color == ColorType::None)
-    {
-        UnityEngine::Color col = UnityEngine::Color::get_white();
-        if(modconfig["monochromeDebris"].GetBool()) col = UnityEngine::Color::get_gray();
-        if(modconfig["enableCustomDebrisColor"].GetBool()) col = UnityEngine::Color(modconfig["customDebrisColorR"].GetFloat()/255.0f, modconfig["customDebrisColorG"].GetFloat()/255.0f, modconfig["customDebrisColorB"].GetFloat()/255.0f, 1.0f);
-        return col;
-    }
-    return ColorManager_ColorForType(self, color);
-}
+
 
 extern "C" void setup(ModInfo& info) {
 
@@ -101,8 +88,7 @@ extern "C" void load() {
     if (!LoadConfig()) SetupConfig();
     il2cpp_functions::Init();
     QuestUI::Init();
-    INSTALL_HOOK_OFFSETLESS(NoteDebris_Init, il2cpp_utils::FindMethodUnsafe("", "NoteDebris", "Init", 10)); 
-    INSTALL_HOOK_OFFSETLESS(ColorManager_ColorForType, il2cpp_utils::FindMethodUnsafe("", "ColorManager", "ColorForType", 1)); 
-    custom_types::Register::RegisterType<DebrisTweaksViewController>();
+    INSTALL_HOOK_OFFSETLESS(getLogger(), NoteDebris_Init, il2cpp_utils::FindMethodUnsafe("", "NoteDebris", "Init", 10)); 
+    custom_types::Register::RegisterTypes<DebrisTweaksViewController>();
     QuestUI::Register::RegisterModSettingsViewController<DebrisTweaksViewController*>(modInfo);
 }
