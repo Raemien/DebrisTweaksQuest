@@ -9,9 +9,12 @@ struct Config_t
     bool enabled;
     bool overrideLifetime;
     bool enableGravity;
+    bool freezeRotations;
+    bool monochromeDebris;
     float debrisLifetime;
     float debrisScale;
     float velocityMultiplier;
+    float drag;
 };
 
 bool LoadConfig();
