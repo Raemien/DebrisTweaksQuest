@@ -1,4 +1,8 @@
-#include "DebrisTweaksViewController.hpp"
+#include "UI/DebrisTweaksMainView.hpp"
+#include "UI/DebrisTweaksPhysicsView.hpp"
+#include "UI/DebrisTweaksCosmeticView.hpp"
+#include "UI/DebrisTweaksFlowCoordinator.hpp"
+
 #include "DTConfig.hpp"
 using namespace DebrisTweaks;
 
@@ -19,14 +23,14 @@ using namespace DebrisTweaks;
 #include "UnityEngine/Quaternion.hpp"
 #include "UnityEngine/Vector3.hpp"
 #include "UnityEngine/Rigidbody.hpp"
-#include "UnityEngine/Material.hpp"
-#include "UnityEngine/MeshRenderer.hpp"
-#include "UnityEngine/Color.hpp"
-#include "GlobalNamespace/ColorManager.hpp"
 #include "UnityEngine/Renderer.hpp"
 #include "UnityEngine/Material.hpp"
-#include "GlobalNamespace/NoteDebris.hpp"
+#include "UnityEngine/MaterialPropertyBlock.hpp"
+#include "UnityEngine/MeshRenderer.hpp"
+#include "UnityEngine/Color.hpp"
 #include "GlobalNamespace/ColorType.hpp"
+#include "GlobalNamespace/NoteDebris.hpp"
+#include "GlobalNamespace/MaterialPropertyBlockController.hpp"
 
 using namespace GlobalNamespace;
 
@@ -70,8 +74,12 @@ Vector3 cpoint, Vector3 cnorm, Vector3 force, Vector3 torque, float lifeTime)
         rbody->set_useGravity(modconfig["enableGravity"].GetBool());
         tform->set_localScale(UnityEngine::Vector3().get_one() * modconfig["debrisScale"].GetFloat());
 
-        UnityEngine::Renderer* rend = self->GetComponent<UnityEngine::Renderer*>();
-        if (modconfig["monochromeDebris"].GetBool()) rend->get_material()->SetColor(il2cpp_utils::createcsstr("_SimpleColor"), UnityEngine::Color::get_white());
+        UnityEngine::Renderer* rend = tform->get_gameObject()->GetComponentInChildren<UnityEngine::Renderer*>();
+        if (modconfig["monochromeDebris"].GetBool() && rend)
+        {
+            self->materialPropertyBlockController->materialPropertyBlock->SetColor(self->_get__colorID(), UnityEngine::Color::get_gray());
+            self->materialPropertyBlockController->ApplyChanges();
+        }
     }
 }
 
@@ -79,7 +87,7 @@ Vector3 cpoint, Vector3 cnorm, Vector3 force, Vector3 torque, float lifeTime)
 extern "C" void setup(ModInfo& info) {
 
     info.id = "DebrisTweaks";
-    info.version = "0.3.0";
+    info.version = "1.0.0";
     modInfo = info;
     getConfig().Load();
 }
@@ -89,6 +97,6 @@ extern "C" void load() {
     il2cpp_functions::Init();
     QuestUI::Init();
     INSTALL_HOOK_OFFSETLESS(getLogger(), NoteDebris_Init, il2cpp_utils::FindMethodUnsafe("", "NoteDebris", "Init", 10)); 
-    custom_types::Register::RegisterTypes<DebrisTweaksViewController>();
-    QuestUI::Register::RegisterModSettingsViewController<DebrisTweaksViewController*>(modInfo);
+    custom_types::Register::RegisterTypes<DebrisTweaksMainView, DebrisTweaksPhysicsView, DebrisTweaksCosmeticView, DebrisTweaksFlowCoordinator>();
+    QuestUI::Register::RegisterModSettingsFlowCoordinator<DebrisTweaksFlowCoordinator*>(modInfo);
 }
