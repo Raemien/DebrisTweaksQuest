@@ -4,7 +4,7 @@
   "info": {
     "name": "DebrisTweaks",
     "id": "DebrisTweaks",
-    "version": "0.3.0",
+    "version": "1.0.0",
     "url": null,
     "additionalData": {}
   },
@@ -17,7 +17,11 @@
     {
       "id": "beatsaber-hook",
       "versionRange": "^1.0.12",
-      "additionalData": {}
+      "additionalData": {
+        "extraFiles": [
+          "src/inline-hook"
+        ]
+      }
     },
     {
       "id": "codegen",
