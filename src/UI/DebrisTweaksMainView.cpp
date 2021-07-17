@@ -25,16 +25,16 @@
 #include "GlobalNamespace/BeatmapLevelSO.hpp"
 
 using namespace DebrisTweaks;
-DEFINE_CLASS(DebrisTweaksMainView);
+DEFINE_TYPE(DebrisTweaksMainView);
 
-void OnChangeEnabled(DebrisTweaksMainView* self, bool newval)
+void OnChangeEnabled(bool newval)
 {
     auto& modcfg = getConfig().config;
     modcfg["enabled"].SetBool(newval);
     ApplyPanelVisibility(newval);
 }
 
-void ResetValues(DebrisTweaksMainView* self)
+void ResetValues()
 {
     SetupConfig();
     getConfig().config["enabled"].SetBool(true);
@@ -44,7 +44,7 @@ void ResetValues(DebrisTweaksMainView* self)
 
 void TestDebris()
 {
-    Array<UnityEngine::Object*>* levelStartArray = UnityEngine::Resources::FindObjectsOfTypeAll(il2cpp_utils::GetSystemType("", "SimpleLevelStarter"));
+    Array<GlobalNamespace::SimpleLevelStarter*>* levelStartArray = UnityEngine::Resources::FindObjectsOfTypeAll<GlobalNamespace::SimpleLevelStarter*>();
     for (int i = 0; i < sizeof(levelStartArray); i++)
     {
         GlobalNamespace::SimpleLevelStarter* lstart = (GlobalNamespace::SimpleLevelStarter*)levelStartArray->values[i];
@@ -70,8 +70,7 @@ void DebrisTweaksMainView::DidActivate(bool firstActivation, bool addedToHierarc
         UnityEngine::UI::VerticalLayoutGroup* enabledcontainer = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(container->get_rectTransform());
         enabledcontainer->set_childAlignment(UnityEngine::TextAnchor::UpperCenter);
         enabledcontainer->GetComponent<UnityEngine::UI::LayoutElement*>()->set_preferredHeight(30);
-        auto onChangeEnabledAction = il2cpp_utils::MakeDelegate<UnityEngine::Events::UnityAction_1<bool>*>(classof(UnityEngine::Events::UnityAction_1<bool>*), this, OnChangeEnabled);
-        this->masterEnabledToggle = QuestUI::BeatSaberUI::CreateToggle(enabledcontainer->get_rectTransform(), "Enable Tweaks", UIValues->enabled, onChangeEnabledAction);
+        this->masterEnabledToggle = QuestUI::BeatSaberUI::CreateToggle(enabledcontainer->get_rectTransform(), "Enable Tweaks", UIValues->enabled, OnChangeEnabled);
 
         // Spacing placeholder
         this->vertpholder = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(container->get_rectTransform());
@@ -81,11 +80,8 @@ void DebrisTweaksMainView::DidActivate(bool firstActivation, bool addedToHierarc
         UnityEngine::UI::HorizontalLayoutGroup* footercontainer = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(container->get_rectTransform());
         footercontainer->set_padding(UnityEngine::RectOffset::New_ctor(1, 1, 2, 2));
 
-        auto onTest = il2cpp_utils::MakeDelegate<UnityEngine::Events::UnityAction*>(classof(UnityEngine::Events::UnityAction*), this, TestDebris);
-        UnityEngine::UI::Button* testButton = QuestUI::BeatSaberUI::CreateUIButton(footercontainer->get_rectTransform(), "Test Debris!", onTest);
-
-        auto onReset = il2cpp_utils::MakeDelegate<UnityEngine::Events::UnityAction*>(classof(UnityEngine::Events::UnityAction*), this, ResetValues);
-        UnityEngine::UI::Button* resetButton = QuestUI::BeatSaberUI::CreateUIButton(footercontainer->get_rectTransform(), "Reset", onReset);
+        UnityEngine::UI::Button* testButton = QuestUI::BeatSaberUI::CreateUIButton(footercontainer->get_rectTransform(), "Test Debris!", TestDebris);
+        UnityEngine::UI::Button* resetButton = QuestUI::BeatSaberUI::CreateUIButton(footercontainer->get_rectTransform(), "Reset", ResetValues);
     }
 }
 

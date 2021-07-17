@@ -24,7 +24,7 @@ DECLARE_CLASS_CODEGEN(DebrisTweaks, DebrisTweaksPhysicsView, HMUI::ViewControlle
     DECLARE_METHOD(void, ReloadUIValues);
     DECLARE_METHOD(void, OnChangeVisibility, bool);
 
-    REGISTER_FUNCTION(DebrisTweaksPhysicsView,
+    REGISTER_FUNCTION(
         REGISTER_FIELD(debrisVelMulSetting);
         REGISTER_FIELD(debrisDragSetting);
         REGISTER_METHOD(OnChangeVisibility);

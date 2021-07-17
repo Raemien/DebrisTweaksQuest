@@ -24,7 +24,7 @@ DECLARE_CLASS_CODEGEN(DebrisTweaks, DebrisTweaksCosmeticView, HMUI::ViewControll
     DECLARE_METHOD(void, ReloadUIValues);
     DECLARE_METHOD(void, OnChangeVisibility, bool);
 
-    REGISTER_FUNCTION(DebrisTweaksCosmeticView,
+    REGISTER_FUNCTION(
         REGISTER_FIELD(debrisLifetimeSetting);
         REGISTER_FIELD(debrisScaleSetting);
         REGISTER_METHOD(ReloadUIValues);

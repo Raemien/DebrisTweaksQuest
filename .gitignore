@@ -45,6 +45,7 @@ ndkpath.txt
 *.zip
 
 # Dependencies & other files
+*.qmod
 extern/
 DebrisTweaks.zip
 qpm.shared.json

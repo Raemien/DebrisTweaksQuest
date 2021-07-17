@@ -17,7 +17,7 @@ DECLARE_CLASS_CODEGEN(DebrisTweaks, DebrisTweaksFlowCoordinator, HMUI::FlowCoord
     DECLARE_METHOD(void, ReloadUIElements);
     DECLARE_METHOD(void, UpdateSettingsVisibility, bool);
 
-    REGISTER_FUNCTION(DebrisTweaksFlowCoordinator,
+    REGISTER_FUNCTION(
         REGISTER_FIELD(dtMainView);
         REGISTER_FIELD(dtPhysicsView);
         REGISTER_FIELD(dtCosmeticView);

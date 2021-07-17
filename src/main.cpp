@@ -33,6 +33,7 @@ using namespace DebrisTweaks;
 #include "GlobalNamespace/MaterialPropertyBlockController.hpp"
 
 using namespace GlobalNamespace;
+using namespace UnityEngine;
 
 static ModInfo modInfo;
 
@@ -46,7 +47,7 @@ Configuration& getConfig() {
     return config;
 }
 
-MAKE_HOOK_OFFSETLESS(NoteDebris_Init, void, NoteDebris* self, ColorType color, Vector3 pos, Quaternion rot, Vector3 posoff, Quaternion rotoff,
+MAKE_HOOK_OFFSETLESS(NoteDebris_Init, void, NoteDebris* self, ColorType color, Vector3 pos, Quaternion rot, Vector3 scale, Vector3 posoff, Quaternion rotoff,
 Vector3 cpoint, Vector3 cnorm, Vector3 force, Vector3 torque, float lifeTime)
 {
     // Regular NoteDebris parameters
@@ -56,9 +57,10 @@ Vector3 cpoint, Vector3 cnorm, Vector3 force, Vector3 torque, float lifeTime)
         float vmul = modconfig["velocityMultiplier"].GetFloat();
         bool overrideLifetime = modconfig["overrideLifetime"].GetBool();
         lifeTime = overrideLifetime ? modconfig["debrisLifetime"].GetFloat() : lifeTime;
+        scale = UnityEngine::Vector3().get_one() * modconfig["debrisScale"].GetFloat();
         force.x *= vmul; force.y *= vmul; force.z *= vmul;
     }
-    NoteDebris_Init(self, color, pos, rot, posoff, rotoff, cpoint, cnorm, force, torque, lifeTime);
+    NoteDebris_Init(self, color, pos, rot, scale, posoff, rotoff, cpoint, cnorm, force, torque, lifeTime);
     // Transform + Rigidbody parameters
     if (modconfig["enabled"].GetBool() && self)
     {
@@ -72,7 +74,6 @@ Vector3 cpoint, Vector3 cnorm, Vector3 force, Vector3 torque, float lifeTime)
 
         UnityEngine::Transform* tform = self->get_transform();
         rbody->set_useGravity(modconfig["enableGravity"].GetBool());
-        tform->set_localScale(UnityEngine::Vector3().get_one() * modconfig["debrisScale"].GetFloat());
 
         UnityEngine::Renderer* rend = tform->get_gameObject()->GetComponentInChildren<UnityEngine::Renderer*>();
         if (modconfig["monochromeDebris"].GetBool() && rend)
@@ -85,9 +86,8 @@ Vector3 cpoint, Vector3 cnorm, Vector3 force, Vector3 torque, float lifeTime)
 
 
 extern "C" void setup(ModInfo& info) {
-
     info.id = "DebrisTweaks";
-    info.version = "1.0.0";
+    info.version = "1.0.1";
     modInfo = info;
     getConfig().Load();
 }
@@ -96,7 +96,7 @@ extern "C" void load() {
     if (!LoadConfig()) SetupConfig();
     il2cpp_functions::Init();
     QuestUI::Init();
-    INSTALL_HOOK_OFFSETLESS(getLogger(), NoteDebris_Init, il2cpp_utils::FindMethodUnsafe("", "NoteDebris", "Init", 10)); 
-    custom_types::Register::RegisterTypes<DebrisTweaksMainView, DebrisTweaksPhysicsView, DebrisTweaksCosmeticView, DebrisTweaksFlowCoordinator>();
-    QuestUI::Register::RegisterModSettingsFlowCoordinator<DebrisTweaksFlowCoordinator*>(modInfo);
+    INSTALL_HOOK_OFFSETLESS(getLogger(), NoteDebris_Init, il2cpp_utils::FindMethodUnsafe("", "NoteDebris", "Init", 11)); 
+    custom_types::Register::RegisterTypes<::DebrisTweaksMainView, ::DebrisTweaksPhysicsView, ::DebrisTweaksCosmeticView, ::DebrisTweaksFlowCoordinator>();
+    QuestUI::Register::RegisterModSettingsFlowCoordinator<::DebrisTweaksFlowCoordinator*>(modInfo);
 }

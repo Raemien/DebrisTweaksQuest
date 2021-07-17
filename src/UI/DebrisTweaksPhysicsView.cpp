@@ -23,13 +23,15 @@
 #include "TMPro/TextMeshProUGUI.hpp"
 
 using namespace DebrisTweaks;
-DEFINE_CLASS(DebrisTweaksPhysicsView);
+DEFINE_TYPE(DebrisTweaksPhysicsView);
 
-void OnChangeVelocity(DebrisTweaksPhysicsView* instance, float newval)
+DebrisTweaksPhysicsView* PhysicsView;
+
+void OnChangeVelocity(float newval)
 {
     newval = std::round(newval * 100) / 100;
     auto& modcfg = getConfig().config;
-    auto* element = instance->debrisVelMulSetting;
+    auto* element = PhysicsView->debrisVelMulSetting;
     auto* decrButton = element->GetComponentsInChildren<UnityEngine::UI::Button*>()->values[0];
     auto* incrButton = element->GetComponentsInChildren<UnityEngine::UI::Button*>()->values[1];
     decrButton->set_interactable(true);
@@ -45,11 +47,11 @@ void OnChangeVelocity(DebrisTweaksPhysicsView* instance, float newval)
     modcfg["velocityMultiplier"].SetFloat(newval);
 }
 
-void OnChangeDrag(DebrisTweaksPhysicsView* instance, float newval)
+void OnChangeDrag(float newval)
 {
     newval = std::round(newval * 100) / 100;
     auto& modcfg = getConfig().config;
-    auto* element = instance->debrisDragSetting;
+    auto* element = PhysicsView->debrisDragSetting;
     auto* decrButton = element->GetComponentsInChildren<UnityEngine::UI::Button*>()->values[0];
     decrButton->set_interactable(true);
     if (newval < 0 + element->Increment * 0.8)
@@ -59,13 +61,13 @@ void OnChangeDrag(DebrisTweaksPhysicsView* instance, float newval)
     modcfg["drag"].SetFloat(newval);
 }
 
-void OnChangeGravity(DebrisTweaksPhysicsView* instance, bool newval)
+void OnChangeGravity(bool newval)
 {
     auto& modcfg = getConfig().config;
     modcfg["enableGravity"].SetBool(newval);
 }
 
-void OnChangeFreezeRot(DebrisTweaksPhysicsView* instance, bool newval)
+void OnChangeFreezeRot(bool newval)
 {
     auto& modcfg = getConfig().config;
     modcfg["freezeRotations"].SetBool(newval);
@@ -91,15 +93,16 @@ void DebrisTweaksPhysicsView::ReloadUIValues()
 
 // void DebrisTweaksPhysicsView::ToggleInteractables(bool clickable)
 // {
-//     instance->debrisVelMulSetting->get_gameObject()->GetComponentsInChildren<UnityEngine::UI::Selectable*>()->values[0]->set_interactable(clickable);
-//     instance->debrisVelMulSetting->get_gameObject()->GetComponentsInChildren<UnityEngine::UI::Selectable*>()->values[1]->set_interactable(clickable);
+//     PhysicsView->debrisVelMulSetting->get_gameObject()->GetComponentsInChildren<UnityEngine::UI::Selectable*>()->values[0]->set_interactable(clickable);
+//     PhysicsView->debrisVelMulSetting->get_gameObject()->GetComponentsInChildren<UnityEngine::UI::Selectable*>()->values[1]->set_interactable(clickable);
 
-//     instance->debrisDragSetting->get_gameObject()->GetComponentsInChildren<UnityEngine::UI::Selectable*>()->values[0]->set_interactable(clickable);
-//     instance->debrisDragSetting->get_gameObject()->GetComponentsInChildren<UnityEngine::UI::Selectable*>()->values[1]->set_interactable(clickable);
+//     PhysicsView->debrisDragSetting->get_gameObject()->GetComponentsInChildren<UnityEngine::UI::Selectable*>()->values[0]->set_interactable(clickable);
+//     PhysicsView->debrisDragSetting->get_gameObject()->GetComponentsInChildren<UnityEngine::UI::Selectable*>()->values[1]->set_interactable(clickable);
 // }
 
 void DebrisTweaksPhysicsView::DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 {
+    PhysicsView = this;
     if(firstActivation && addedToHierarchy) 
     {
         this->container = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(get_rectTransform());
@@ -122,17 +125,10 @@ void DebrisTweaksPhysicsView::DidActivate(bool firstActivation, bool addedToHier
         configcontainer->set_childForceExpandHeight(false);
         configcontainer->set_childControlHeight(true);
 
-        auto onChangeVelMulAction = il2cpp_utils::MakeDelegate<UnityEngine::Events::UnityAction_1<float>*>(classof(UnityEngine::Events::UnityAction_1<float>*), this, OnChangeVelocity);
-        this->debrisVelMulSetting = QuestUI::BeatSaberUI::CreateIncrementSetting(configcontainer->get_rectTransform(), "Velocity Multiplier", 2, 0.1f, UIValues->velocity, onChangeVelMulAction);
-
-        auto onChangeDragAction = il2cpp_utils::MakeDelegate<UnityEngine::Events::UnityAction_1<float>*>(classof(UnityEngine::Events::UnityAction_1<float>*), this, OnChangeDrag);
-        this->debrisDragSetting = QuestUI::BeatSaberUI::CreateIncrementSetting(configcontainer->get_rectTransform(), "Drag", 2, 0.2f, UIValues->drag, onChangeDragAction);
-
-        auto onChangeGravityAction = il2cpp_utils::MakeDelegate<UnityEngine::Events::UnityAction_1<bool>*>(classof(UnityEngine::Events::UnityAction_1<bool>*), this, OnChangeGravity);
-        this->enableGravityToggle = QuestUI::BeatSaberUI::CreateToggle(configcontainer->get_rectTransform(), "Enable Gravity", UIValues->gravity, UnityEngine::Vector2(0, 0), onChangeGravityAction);
-
-        auto onChangeFreezeRotAction = il2cpp_utils::MakeDelegate<UnityEngine::Events::UnityAction_1<bool>*>(classof(UnityEngine::Events::UnityAction_1<bool>*), this, OnChangeFreezeRot);
-        this->freezeRotToggle = QuestUI::BeatSaberUI::CreateToggle(configcontainer->get_rectTransform(), "Prevent Rotations", UIValues->freezerot, UnityEngine::Vector2(0, 0), onChangeFreezeRotAction);
+        this->debrisVelMulSetting = QuestUI::BeatSaberUI::CreateIncrementSetting(configcontainer->get_rectTransform(), "Velocity Multiplier", 2, 0.1f, UIValues->velocity, OnChangeVelocity);
+        this->debrisDragSetting = QuestUI::BeatSaberUI::CreateIncrementSetting(configcontainer->get_rectTransform(), "Drag", 2, 0.2f, UIValues->drag, OnChangeDrag);
+        this->enableGravityToggle = QuestUI::BeatSaberUI::CreateToggle(configcontainer->get_rectTransform(), "Enable Gravity", UIValues->gravity, UnityEngine::Vector2(0, 0), OnChangeGravity);
+        this->freezeRotToggle = QuestUI::BeatSaberUI::CreateToggle(configcontainer->get_rectTransform(), "Prevent Rotations", UIValues->freezerot, UnityEngine::Vector2(0, 0), OnChangeFreezeRot);
     }
     this->ReloadUIValues();
 }

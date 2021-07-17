@@ -17,7 +17,6 @@ struct Config_t
     float debrisScale = 1;
     float velocityMultiplier = 1;
     float drag = 0;
-
 }
 Settings;
 

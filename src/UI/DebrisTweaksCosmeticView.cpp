@@ -23,15 +23,15 @@
 #include "TMPro/TextMeshProUGUI.hpp"
 
 using namespace DebrisTweaks;
-DEFINE_CLASS(DebrisTweaksCosmeticView);
+DEFINE_TYPE(DebrisTweaksCosmeticView);
 
-// Inital Values
+DebrisTweaksCosmeticView* CosmeticView;
 
-void OnChangeLifetime(DebrisTweaksCosmeticView* instance, float newval)
+void OnChangeLifetime(float newval)
 {
     newval = std::abs(std::round(newval * 100)) / 100;
     auto& modcfg = getConfig().config;
-    auto* element = instance->debrisLifetimeSetting;
+    auto* element = CosmeticView->debrisLifetimeSetting;
     auto* decrButton = element->GetComponentsInChildren<UnityEngine::UI::Button*>()->values[0];
     decrButton->set_interactable(true);
     if (newval < element->Increment)
@@ -41,11 +41,11 @@ void OnChangeLifetime(DebrisTweaksCosmeticView* instance, float newval)
     modcfg["debrisLifetime"].SetFloat(newval);
 }
 
-void OnChangeScale(DebrisTweaksCosmeticView* instance, float newval)
+void OnChangeScale(float newval)
 {
     newval = std::abs(std::round(newval * 100)) / 100;
     auto& modcfg = getConfig().config;
-    auto* element = instance->debrisScaleSetting;
+    auto* element = CosmeticView->debrisScaleSetting;
     auto* decrButton = element->GetComponentsInChildren<UnityEngine::UI::Button*>()->values[0];
     auto* incrButton = element->GetComponentsInChildren<UnityEngine::UI::Button*>()->values[1];
     decrButton->set_interactable(true);
@@ -61,17 +61,17 @@ void OnChangeScale(DebrisTweaksCosmeticView* instance, float newval)
     modcfg["debrisScale"].SetFloat(newval);
 }
 
-void OnChangeMonochrome(DebrisTweaksCosmeticView* instance, bool newval)
+void OnChangeMonochrome(bool newval)
 {
     auto& modcfg = getConfig().config;
     modcfg["monochromeDebris"].SetBool(newval);
 }
 
-void OnChangeLTimeOverride(DebrisTweaksCosmeticView* instance, bool newval)
+void OnChangeLTimeOverride(bool newval)
 {
     auto& modcfg = getConfig().config;
     modcfg["overrideLifetime"].SetBool(newval);
-    instance->ReloadUIValues();
+    CosmeticView->ReloadUIValues();
 }
 
 void DebrisTweaksCosmeticView::OnChangeVisibility(bool newval)
@@ -95,17 +95,18 @@ void DebrisTweaksCosmeticView::ReloadUIValues()
     this->debrisLifetimeSetting->get_gameObject()->GetComponentsInChildren<UnityEngine::UI::Selectable*>()->values[1]->set_interactable(UIValues->overridetime);
 }
 
-// void ToggleInteractables(DebrisTweaksCosmeticView* instance, bool clickable)
+// void ToggleInteractables(bool clickable)
 // {
-//     instance->debrisLifetimeSetting->get_gameObject()->GetComponentsInChildren<UnityEngine::UI::Selectable*>()->values[0]->set_interactable(clickable);
-//     instance->debrisLifetimeSetting->get_gameObject()->GetComponentsInChildren<UnityEngine::UI::Selectable*>()->values[1]->set_interactable(clickable);
+//     CosmeticView->debrisLifetimeSetting->get_gameObject()->GetComponentsInChildren<UnityEngine::UI::Selectable*>()->values[0]->set_interactable(clickable);
+//     CosmeticView->debrisLifetimeSetting->get_gameObject()->GetComponentsInChildren<UnityEngine::UI::Selectable*>()->values[1]->set_interactable(clickable);
 
-//     instance->debrisScaleSetting->get_gameObject()->GetComponentsInChildren<UnityEngine::UI::Selectable*>()->values[0]->set_interactable(clickable);
-//     instance->debrisScaleSetting->get_gameObject()->GetComponentsInChildren<UnityEngine::UI::Selectable*>()->values[1]->set_interactable(clickable);
+//     CosmeticView->debrisScaleSetting->get_gameObject()->GetComponentsInChildren<UnityEngine::UI::Selectable*>()->values[0]->set_interactable(clickable);
+//     CosmeticView->debrisScaleSetting->get_gameObject()->GetComponentsInChildren<UnityEngine::UI::Selectable*>()->values[1]->set_interactable(clickable);
 // }
 
 void DebrisTweaksCosmeticView::DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 {
+    CosmeticView = this;
     if(firstActivation && addedToHierarchy) 
     {
         this->container = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(get_rectTransform());
@@ -128,18 +129,11 @@ void DebrisTweaksCosmeticView::DidActivate(bool firstActivation, bool addedToHie
         configcontainer->set_childForceExpandHeight(false);
         configcontainer->set_childControlHeight(true);
 
-        auto onChangeLTimeOverrideAction = il2cpp_utils::MakeDelegate<UnityEngine::Events::UnityAction_1<bool>*>(classof(UnityEngine::Events::UnityAction_1<bool>*), this, OnChangeLTimeOverride);
-        this->overrideLifetimeToggle = QuestUI::BeatSaberUI::CreateToggle(configcontainer->get_rectTransform(), "Override Debris Lifetime", UIValues->overridetime, onChangeLTimeOverrideAction);
-
-        auto onChangeLifetimeAction = il2cpp_utils::MakeDelegate<UnityEngine::Events::UnityAction_1<float>*>(classof(UnityEngine::Events::UnityAction_1<float>*), this, OnChangeLifetime);
-        this->debrisLifetimeSetting = QuestUI::BeatSaberUI::CreateIncrementSetting(configcontainer->get_rectTransform(), "Lifespan (Seconds)", 2, 0.2, UIValues->lifetime, onChangeLifetimeAction);
-
-        auto onChangeScaleAction = il2cpp_utils::MakeDelegate<UnityEngine::Events::UnityAction_1<float>*>(classof(UnityEngine::Events::UnityAction_1<float>*), this, OnChangeScale);
-        this->debrisScaleSetting = QuestUI::BeatSaberUI::CreateIncrementSetting(configcontainer->get_rectTransform(), "Scale", 2, 0.1, UIValues->scale, onChangeScaleAction);
+        this->overrideLifetimeToggle = QuestUI::BeatSaberUI::CreateToggle(configcontainer->get_rectTransform(), "Override Debris Lifetime", UIValues->overridetime, OnChangeLTimeOverride);
+        this->debrisLifetimeSetting = QuestUI::BeatSaberUI::CreateIncrementSetting(configcontainer->get_rectTransform(), "Lifespan (Seconds)", 2, 0.2, UIValues->lifetime, OnChangeLifetime);
+        this->debrisScaleSetting = QuestUI::BeatSaberUI::CreateIncrementSetting(configcontainer->get_rectTransform(), "Scale", 2, 0.1, UIValues->scale, OnChangeScale);
         QuestUI::BeatSaberUI::AddHoverHint(debrisScaleSetting->get_gameObject(), "The relative size of sliced debris.");
-
-        auto onChangeMonochromeAction = il2cpp_utils::MakeDelegate<UnityEngine::Events::UnityAction_1<bool>*>(classof(UnityEngine::Events::UnityAction_1<bool>*), this, OnChangeMonochrome);
-        this->monochromeToggle = QuestUI::BeatSaberUI::CreateToggle(configcontainer->get_rectTransform(), "Monochromatic Colors", UIValues->freezerot, UnityEngine::Vector2(0, 0), onChangeMonochromeAction);
+        this->monochromeToggle = QuestUI::BeatSaberUI::CreateToggle(configcontainer->get_rectTransform(), "Monochromatic Colors", UIValues->freezerot, UnityEngine::Vector2(0, 0), OnChangeMonochrome);
 
         this->ReloadUIValues();
     }
