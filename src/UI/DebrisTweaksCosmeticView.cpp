@@ -94,6 +94,7 @@ void DebrisTweaksCosmeticView::ReloadUIValues()
     //Update UI elements
     this->overrideLifetimeToggle->set_isOn(UIValues->overridetime);
     this->monochromeToggle->set_isOn(UIValues->monochrome);
+    this->pcDebrisToggle->set_isOn(UIValues->pcdebris);
     this->debrisLifetimeSetting->UpdateValue();
     this->debrisScaleSetting->UpdateValue();
     // Set interactables
