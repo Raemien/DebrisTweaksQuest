@@ -9,6 +9,7 @@ struct Config_t
 {
     bool enabled = false;
     bool overrideLifetime = true;
+    bool enablePCDebris = false;
     bool enableGravity = true;
     bool freezeRotations = false;
     bool monochromeDebris = false;
@@ -27,6 +28,7 @@ void SetupConfig()
     auto& allocator = getConfig().config.GetAllocator();
     getConfig().config.AddMember("enabled", Settings.enabled, allocator);
     getConfig().config.AddMember("overrideLifetime", Settings.overrideLifetime, allocator);
+    getConfig().config.AddMember("enablePCDebris", Settings.enablePCDebris, allocator);
     getConfig().config.AddMember("enableGravity", Settings.enableGravity, allocator);
     getConfig().config.AddMember("freezeRotations", Settings.freezeRotations, allocator);
     getConfig().config.AddMember("monochromeDebris", Settings.monochromeDebris, allocator);
@@ -42,6 +44,7 @@ bool LoadConfig()
     getConfig().Load();
     if(!getConfig().config.HasMember("enabled") || !getConfig().config["enabled"].IsBool()) return false;
     if(!getConfig().config.HasMember("overrideLifetime") || !getConfig().config["overrideLifetime"].IsBool()) return false;
+    if(!getConfig().config.HasMember("enablePCDebris") || !getConfig().config["enablePCDebris"].IsBool()) return false;
     if(!getConfig().config.HasMember("enableGravity") || !getConfig().config["enableGravity"].IsBool()) return false;
     if(!getConfig().config.HasMember("freezeRotations") || !getConfig().config["freezeRotations"].IsBool()) return false;
     if(!getConfig().config.HasMember("monochromeDebris") || !getConfig().config["monochromeDebris"].IsBool()) return false;

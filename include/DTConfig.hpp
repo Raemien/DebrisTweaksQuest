@@ -8,6 +8,7 @@ struct Config_t
 {
     bool enabled;
     bool overrideLifetime;
+    bool enablePCDebris;
     bool enableGravity;
     bool freezeRotations;
     bool monochromeDebris;

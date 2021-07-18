@@ -9,6 +9,7 @@ struct InitalValues_t
 {
     bool enabled;
     bool overridetime;
+    bool pcdebris;
     bool gravity;
     bool monochrome;
     bool lifetime;

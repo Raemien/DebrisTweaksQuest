@@ -26,8 +26,11 @@ using namespace DebrisTweaks;
 #include "UnityEngine/MaterialPropertyBlock.hpp"
 #include "UnityEngine/MeshRenderer.hpp"
 #include "UnityEngine/Color.hpp"
+
+
 #include "GlobalNamespace/ColorType.hpp"
 #include "GlobalNamespace/NoteDebris.hpp"
+#include "GlobalNamespace/ConditionalMaterialSwitcher.hpp"
 #include "GlobalNamespace/MaterialPropertyBlockController.hpp"
 
 using namespace GlobalNamespace;
@@ -49,36 +52,43 @@ MAKE_HOOK_MATCH(NoteDebris_Init, &GlobalNamespace::NoteDebris::Init, void, NoteD
 Vector3 cpoint, Vector3 cnorm, Vector3 force, Vector3 torque, float lifeTime)
 {
     // Regular NoteDebris parameters
-    auto& modconfig = getConfig().config;
-    if (modconfig["enabled"].GetBool())
+    auto& modcfg = getConfig().config;
+    if (modcfg["enabled"].GetBool())
     {
-        float vmul = modconfig["velocityMultiplier"].GetFloat();
-        bool overrideLifetime = modconfig["overrideLifetime"].GetBool();
-        lifeTime = overrideLifetime ? modconfig["debrisLifetime"].GetFloat() : lifeTime;
-        scale = UnityEngine::Vector3().get_one() * modconfig["debrisScale"].GetFloat();
+        float vmul = modcfg["velocityMultiplier"].GetFloat();
+        bool overrideLifetime = modcfg["overrideLifetime"].GetBool();
+        lifeTime = overrideLifetime ? modcfg["debrisLifetime"].GetFloat() : lifeTime;
+        scale = UnityEngine::Vector3().get_one() * modcfg["debrisScale"].GetFloat();
         force.x *= vmul; force.y *= vmul; force.z *= vmul;
     }
     NoteDebris_Init(self, color, pos, rot, moveVec, scale, posoff, rotoff, cpoint, cnorm, force, torque, lifeTime);
     // Transform + Rigidbody parameters
-    if (modconfig["enabled"].GetBool() && self)
+    if (modcfg["enabled"].GetBool() && self)
     {
         UnityEngine::Rigidbody* rbody = self->GetComponent<UnityEngine::Rigidbody*>();
 
         static auto set_freezeRotation = reinterpret_cast<function_ptr_t<void, UnityEngine::Rigidbody*, bool>>(il2cpp_functions::resolve_icall("UnityEngine.Rigidbody::set_freezeRotation"));
-        set_freezeRotation(rbody, modconfig["freezeRotations"].GetBool());
+        set_freezeRotation(rbody, modcfg["freezeRotations"].GetBool());
 
         static auto set_drag = reinterpret_cast<function_ptr_t<void, UnityEngine::Rigidbody*, float>>(il2cpp_functions::resolve_icall("UnityEngine.Rigidbody::set_drag"));
-        set_drag(rbody, modconfig["drag"].GetFloat());
+        set_drag(rbody, modcfg["drag"].GetFloat());
 
         UnityEngine::Transform* tform = self->get_transform();
-        rbody->set_useGravity(modconfig["enableGravity"].GetBool());
+        rbody->set_useGravity(modcfg["enableGravity"].GetBool());
 
         UnityEngine::Renderer* rend = tform->get_gameObject()->GetComponentInChildren<UnityEngine::Renderer*>();
-        if (modconfig["monochromeDebris"].GetBool() && rend)
+        if (rend)
         {
-            self->materialPropertyBlockController->materialPropertyBlock->SetColor(self->_get__colorID(), UnityEngine::Color::get_gray());
-            self->materialPropertyBlockController->ApplyChanges();
+            auto* matSwitcher = tform->GetComponentInChildren<GlobalNamespace::ConditionalMaterialSwitcher*>();
+            if (modcfg["enablePCDebris"].GetBool() && matSwitcher) rend->SetMaterial(matSwitcher->material1);
+
+            if (modcfg["monochromeDebris"].GetBool())
+            {
+                self->materialPropertyBlockController->materialPropertyBlock->SetColor(self->_get__colorID(), UnityEngine::Color::get_gray());
+                self->materialPropertyBlockController->ApplyChanges();
+            }
         }
+
     }
 }
 

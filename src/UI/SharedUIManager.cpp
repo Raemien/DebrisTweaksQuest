@@ -12,6 +12,7 @@ void SetInitialValues()
 {
     UIValues->enabled = getConfig().config["enabled"].GetBool();
     UIValues->overridetime = getConfig().config["overrideLifetime"].GetBool();
+    UIValues->pcdebris = getConfig().config["enablePCDebris"].GetBool();
     UIValues->gravity = getConfig().config["enableGravity"].GetBool();
     UIValues->monochrome = getConfig().config["monochromeDebris"].GetBool();
     UIValues->lifetime = getConfig().config["debrisLifetime"].GetFloat();
