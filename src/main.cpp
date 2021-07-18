@@ -10,12 +10,10 @@ using namespace DebrisTweaks;
 #include "modloader/shared/modloader.hpp"
 #include "beatsaber-hook/shared/utils/utils.h"
 #include "beatsaber-hook/shared/utils/logging.hpp"
-#include "modloader/shared/modloader.hpp"
+#include "beatsaber-hook/shared/utils/hooking.hpp"
 #include "beatsaber-hook/shared/utils/il2cpp-utils.hpp" 
 #include "beatsaber-hook/shared/utils/il2cpp-functions.hpp"
-#include "beatsaber-hook/shared/utils/typedefs.h"
 #include "beatsaber-hook/shared/config/config-utils.hpp"
-#include <string>
 
 #include "questui/shared/QuestUI.hpp"
 #include "custom-types/shared/register.hpp"
@@ -47,7 +45,7 @@ Configuration& getConfig() {
     return config;
 }
 
-MAKE_HOOK_OFFSETLESS(NoteDebris_Init, void, NoteDebris* self, ColorType color, Vector3 pos, Quaternion rot, Vector3 scale, Vector3 posoff, Quaternion rotoff,
+MAKE_HOOK_MATCH(NoteDebris_Init, &GlobalNamespace::NoteDebris::Init, void, NoteDebris* self, ColorType color, Vector3 pos, Quaternion rot, Vector3 moveVec, Vector3 scale, Vector3 posoff, Quaternion rotoff,
 Vector3 cpoint, Vector3 cnorm, Vector3 force, Vector3 torque, float lifeTime)
 {
     // Regular NoteDebris parameters
@@ -60,7 +58,7 @@ Vector3 cpoint, Vector3 cnorm, Vector3 force, Vector3 torque, float lifeTime)
         scale = UnityEngine::Vector3().get_one() * modconfig["debrisScale"].GetFloat();
         force.x *= vmul; force.y *= vmul; force.z *= vmul;
     }
-    NoteDebris_Init(self, color, pos, rot, scale, posoff, rotoff, cpoint, cnorm, force, torque, lifeTime);
+    NoteDebris_Init(self, color, pos, rot, moveVec, scale, posoff, rotoff, cpoint, cnorm, force, torque, lifeTime);
     // Transform + Rigidbody parameters
     if (modconfig["enabled"].GetBool() && self)
     {
@@ -96,7 +94,7 @@ extern "C" void load() {
     if (!LoadConfig()) SetupConfig();
     il2cpp_functions::Init();
     QuestUI::Init();
-    INSTALL_HOOK_OFFSETLESS(getLogger(), NoteDebris_Init, il2cpp_utils::FindMethodUnsafe("", "NoteDebris", "Init", 11)); 
-    custom_types::Register::RegisterTypes<::DebrisTweaksMainView, ::DebrisTweaksPhysicsView, ::DebrisTweaksCosmeticView, ::DebrisTweaksFlowCoordinator>();
+    INSTALL_HOOK(getLogger(), NoteDebris_Init); 
+    custom_types::Register::AutoRegister();
     QuestUI::Register::RegisterModSettingsFlowCoordinator<::DebrisTweaksFlowCoordinator*>(modInfo);
 }

@@ -25,7 +25,7 @@
 #include "GlobalNamespace/BeatmapLevelSO.hpp"
 
 using namespace DebrisTweaks;
-DEFINE_TYPE(DebrisTweaksMainView);
+DEFINE_TYPE(DebrisTweaks, DebrisTweaksMainView);
 
 void OnChangeEnabled(bool newval)
 {

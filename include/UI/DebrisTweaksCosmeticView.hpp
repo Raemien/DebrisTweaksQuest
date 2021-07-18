@@ -21,15 +21,6 @@ DECLARE_CLASS_CODEGEN(DebrisTweaks, DebrisTweaksCosmeticView, HMUI::ViewControll
     // Methods
     DECLARE_OVERRIDE_METHOD(void, DidActivate, il2cpp_utils::FindMethodUnsafe("HMUI", "ViewController", "DidActivate", 3), bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling);
     DECLARE_OVERRIDE_METHOD(void, DidDeactivate, il2cpp_utils::FindMethodUnsafe("HMUI", "ViewController", "DidDeactivate", 2), bool removedFromHierarchy, bool systemScreenDisabling);
-    DECLARE_METHOD(void, ReloadUIValues);
-    DECLARE_METHOD(void, OnChangeVisibility, bool);
-
-    REGISTER_FUNCTION(
-        REGISTER_FIELD(debrisLifetimeSetting);
-        REGISTER_FIELD(debrisScaleSetting);
-        REGISTER_METHOD(ReloadUIValues);
-        REGISTER_METHOD(OnChangeVisibility);
-        REGISTER_METHOD(DidActivate);
-        REGISTER_METHOD(DidDeactivate);
-    )
+    DECLARE_INSTANCE_METHOD(void, ReloadUIValues);
+    DECLARE_INSTANCE_METHOD(void, OnChangeVisibility, bool);
 )

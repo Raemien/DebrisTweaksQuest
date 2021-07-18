@@ -7,11 +7,11 @@
     "description": "Allows for full customization of various note debris parameters, including scale, lifetime and velocity.",
     "version": "1.0.1",
     "packageId": "com.beatgames.beatsaber",
-    "packageVersion": "1.15.0",
+    "packageVersion": "1.16.2",
     "modFiles": [
         "libdebris-tweaks.so"
     ],
     "libraryFiles": [
-        "libbeatsaber-hook_1_3_3.so"
+        "libbeatsaber-hook_2_0_3.so"
     ]
 }

@@ -23,7 +23,7 @@
 #include "TMPro/TextMeshProUGUI.hpp"
 
 using namespace DebrisTweaks;
-DEFINE_TYPE(DebrisTweaksPhysicsView);
+DEFINE_TYPE(DebrisTweaks, DebrisTweaksPhysicsView);
 
 DebrisTweaksPhysicsView* PhysicsView;
 

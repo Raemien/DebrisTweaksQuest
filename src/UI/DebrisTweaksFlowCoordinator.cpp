@@ -25,7 +25,7 @@
 #include "GlobalNamespace/MainFlowCoordinator.hpp"
 
 using namespace DebrisTweaks;
-DEFINE_TYPE(DebrisTweaksFlowCoordinator);
+DEFINE_TYPE(DebrisTweaks, DebrisTweaksFlowCoordinator);
 
 void DebrisTweaksFlowCoordinator::DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 {

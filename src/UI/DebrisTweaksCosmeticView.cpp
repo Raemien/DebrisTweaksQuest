@@ -23,7 +23,7 @@
 #include "TMPro/TextMeshProUGUI.hpp"
 
 using namespace DebrisTweaks;
-DEFINE_TYPE(DebrisTweaksCosmeticView);
+DEFINE_TYPE(DebrisTweaks, DebrisTweaksCosmeticView);
 
 DebrisTweaksCosmeticView* CosmeticView;
 
