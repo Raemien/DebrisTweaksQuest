@@ -16,6 +16,7 @@ DECLARE_CLASS_CODEGEN(DebrisTweaks, DebrisTweaksCosmeticView, HMUI::ViewControll
 
     // Toggles
     DECLARE_INSTANCE_FIELD(UnityEngine::UI::Toggle*, overrideLifetimeToggle);
+    DECLARE_INSTANCE_FIELD(UnityEngine::UI::Toggle*, pcDebrisToggle);
     DECLARE_INSTANCE_FIELD(UnityEngine::UI::Toggle*, monochromeToggle);
 
     // Methods

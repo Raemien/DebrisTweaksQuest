@@ -61,6 +61,12 @@ void OnChangeScale(float newval)
     modcfg["debrisScale"].SetFloat(newval);
 }
 
+void OnChangeUsePCDebris(bool newval)
+{
+    auto& modcfg = getConfig().config;
+    modcfg["enablePCDebris"].SetBool(newval);
+}
+
 void OnChangeMonochrome(bool newval)
 {
     auto& modcfg = getConfig().config;
@@ -95,15 +101,6 @@ void DebrisTweaksCosmeticView::ReloadUIValues()
     this->debrisLifetimeSetting->get_gameObject()->GetComponentsInChildren<UnityEngine::UI::Selectable*>()->values[1]->set_interactable(UIValues->overridetime);
 }
 
-// void ToggleInteractables(bool clickable)
-// {
-//     CosmeticView->debrisLifetimeSetting->get_gameObject()->GetComponentsInChildren<UnityEngine::UI::Selectable*>()->values[0]->set_interactable(clickable);
-//     CosmeticView->debrisLifetimeSetting->get_gameObject()->GetComponentsInChildren<UnityEngine::UI::Selectable*>()->values[1]->set_interactable(clickable);
-
-//     CosmeticView->debrisScaleSetting->get_gameObject()->GetComponentsInChildren<UnityEngine::UI::Selectable*>()->values[0]->set_interactable(clickable);
-//     CosmeticView->debrisScaleSetting->get_gameObject()->GetComponentsInChildren<UnityEngine::UI::Selectable*>()->values[1]->set_interactable(clickable);
-// }
-
 void DebrisTweaksCosmeticView::DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 {
     CosmeticView = this;
@@ -129,11 +126,18 @@ void DebrisTweaksCosmeticView::DidActivate(bool firstActivation, bool addedToHie
         configcontainer->set_childForceExpandHeight(false);
         configcontainer->set_childControlHeight(true);
 
-        this->overrideLifetimeToggle = QuestUI::BeatSaberUI::CreateToggle(configcontainer->get_rectTransform(), "Override Debris Lifetime", UIValues->overridetime, OnChangeLTimeOverride);
-        this->debrisLifetimeSetting = QuestUI::BeatSaberUI::CreateIncrementSetting(configcontainer->get_rectTransform(), "Lifespan (Seconds)", 2, 0.2, UIValues->lifetime, OnChangeLifetime);
+        this->pcDebrisToggle = QuestUI::BeatSaberUI::CreateToggle(configcontainer->get_rectTransform(), "Enable PC Debris", UIValues->pcdebris, OnChangeUsePCDebris);
+        this->monochromeToggle = QuestUI::BeatSaberUI::CreateToggle(configcontainer->get_rectTransform(), "Monochromatic Colors", UIValues->freezerot, UnityEngine::Vector2(0, 0), OnChangeMonochrome);
         this->debrisScaleSetting = QuestUI::BeatSaberUI::CreateIncrementSetting(configcontainer->get_rectTransform(), "Scale", 2, 0.1, UIValues->scale, OnChangeScale);
         QuestUI::BeatSaberUI::AddHoverHint(debrisScaleSetting->get_gameObject(), "The relative size of sliced debris.");
-        this->monochromeToggle = QuestUI::BeatSaberUI::CreateToggle(configcontainer->get_rectTransform(), "Monochromatic Colors", UIValues->freezerot, UnityEngine::Vector2(0, 0), OnChangeMonochrome);
+
+        auto* lifetimeContainer = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(container->get_rectTransform());
+        lifetimeContainer->set_childAlignment(UnityEngine::TextAnchor::UpperCenter);
+        lifetimeContainer->set_childForceExpandHeight(false);
+        lifetimeContainer->set_childControlHeight(true);
+
+        this->overrideLifetimeToggle = QuestUI::BeatSaberUI::CreateToggle(lifetimeContainer->get_rectTransform(), "Override Debris Lifetime", UIValues->overridetime, OnChangeLTimeOverride);
+        this->debrisLifetimeSetting = QuestUI::BeatSaberUI::CreateIncrementSetting(lifetimeContainer->get_rectTransform(), "Lifespan (Seconds)", 2, 0.2, UIValues->lifetime, OnChangeLifetime);
 
         this->ReloadUIValues();
     }
