@@ -7,7 +7,7 @@ if (-not ($PSVersionTable.PSEdition -eq "Core")) {
 }
 
 & $buildScript NDK_PROJECT_PATH=$PSScriptRoot APP_BUILD_SCRIPT=$PSScriptRoot/Android.mk NDK_APPLICATION_MK=$PSScriptRoot/Application.mk -j 4
-Compress-Archive -Path  "./libs/arm64-v8a/libbeatsaber-hook_2_0_3.so",`
+Compress-Archive -Path  "./libs/arm64-v8a/libbeatsaber-hook_2_2_5.so",`
                         "./libs/arm64-v8a/libdebris-tweaks.so",`
                         "./cover.png",`
                         "./mod.json" -DestinationPath "./DebrisTweaks.zip" -Update
