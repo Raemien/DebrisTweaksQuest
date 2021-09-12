@@ -59,7 +59,7 @@ Vector3 cpoint, Vector3 cnorm, Vector3 force, Vector3 torque, float lifeTime)
         bool overrideLifetime = modcfg["overrideLifetime"].GetBool();
         lifeTime = overrideLifetime ? modcfg["debrisLifetime"].GetFloat() : lifeTime;
         scale = UnityEngine::Vector3().get_one() * modcfg["debrisScale"].GetFloat();
-        force.x *= vmul;
+        force.x *= vmul; force.y *= vmul; force.z *= vmul;
     }
     NoteDebris_Init(self, color, pos, rot, moveVec, scale, posoff, rotoff, cpoint, cnorm, force, torque, lifeTime);
     // Transform + Rigidbody parameters
@@ -95,7 +95,7 @@ Vector3 cpoint, Vector3 cnorm, Vector3 force, Vector3 torque, float lifeTime)
 
 extern "C" void setup(ModInfo& info) {
     info.id = "DebrisTweaks";
-    info.version = "1.1.1";
+    info.version = "1.1.2";
     modInfo = info;
     getConfig().Load();
 }
